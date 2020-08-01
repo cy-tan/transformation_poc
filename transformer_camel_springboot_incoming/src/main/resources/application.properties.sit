@@ -1,0 +1,61 @@
+    camel.springboot.main-run-controller=true
+    
+    # WMQ broker properties
+    #ibm.mq.queueManager=qm001
+    #ibm.mq.channel=CLOUD.APP.SVRCONN
+    #ibm.mq.connName=qm001-0077.qm.us-south.mq.appdomain.cloud(31179)
+    #ibm.mq.user=apachecamel
+    #ibm.mq.password=sH4S5IdZ2rzm1C5KPbjTiajtUnsSxF3Y5QyZHRvdmeoz
+    
+    ibm.mq.queueManager=QM1
+    ibm.mq.channel=DEV.APP.SVRCONN
+    ibm.mq.connName=ibmmq.fuse-poc.svc(1414)
+    ibm.mq.user=app
+    ibm.mq.password=passw0rd
+    
+    #out going flow scenarios : queue names
+    out.1.start.queue=DEV.QUEUE.2
+    out.1.end.queue=DEV.QUEUE.1
+    out.2.start.queue=DEV.QUEUE.2
+    out.2.end.queue=DEV.QUEUE.1
+    out.3.start.queue=DEV.QUEUE.2
+    out.3.end.queue=DEV.QUEUE.1
+    out.4.start.queue=DEV.QUEUE.2
+    out.4.end.queue=DEV.QUEUE.1
+    out.5.start.queue=DEV.QUEUE.2
+    out.5.end.queue=DEV.QUEUE.1
+    out.6.start.queue=DEV.QUEUE.2
+    out.6.end.queue=DEV.QUEUE.1
+    
+    #in coming flow scenarios : queue names
+    in.7.start.queue=DEV.QUEUE.2
+    in.7.end.queue=DEV.QUEUE.1
+    in.8.start.queue=DEV.QUEUE.2
+    in.8.end.queue=DEV.QUEUE.1
+    in.9.start.queue=DEV.QUEUE.2
+    in.9.end.queue=DEV.QUEUE.1
+    in.10.start.queue=DEV.QUEUE.2
+    in.10.end.queue=DEV.QUEUE.1
+    
+    #out going flow scenarios : file path
+    out.1.start.path=/tmp/input/1
+    out.1.end.path=/tmp/output/1
+    out.2.start.path=/tmp/input/2
+    out.2.end.path=/tmp/output/2
+    out.3.start.path=/tmp/input/3
+    out.3.end.path=/tmp/output/3
+    out.4.start.path=/tmp/input/4
+    out.4.end.path=/tmp/output/4
+    out.5.start.path=/tmp/input/5
+    out.5.end.path=/tmp/output/5
+    out.6.start.path=/tmp/input/6
+    out.6.end.path=/tmp/output/6
+    #in going flow scenarios : file path
+    in.7.start.path=/tmp/input/7
+    in.7.end.path=/tmp/output/7
+    in.8.start.path=/tmp/input/8
+    in.8.end.path=/tmp/output/8
+    in.9.start.path=/tmp/input/9
+    in.9.end.path=/tmp/output/9
+    in.10.start.path=/tmp/input/10
+    in.10.end.path=/tmp/output/10

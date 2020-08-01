@@ -1,0 +1,7 @@
+{
+    "java.project.referencedLibraries": [
+        "lib/**/*.jar",
+        "/Users/cytan/Library/Application Support/Code/User/globalStorage/redhat.vscode-camelk/java-dependencies-3.3.0/*.jar"
+    ],
+    "java.configuration.updateBuildConfiguration": "interactive"
+}

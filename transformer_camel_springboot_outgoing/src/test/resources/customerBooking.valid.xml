@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<CustomerBooking xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="Customer">
+    <Name>Abraham</Name>
+    <Email>AbrahamAbes@abc.com</Email>
+    <Currency>GBP</Currency>
+    <CardDetails>
+        <CardNumber>1111222233334444</CardNumber>
+        <Expires>2021-03-01</Expires>
+    </CardDetails>
+    <RoomDetails>
+        <RoomNumber>A07</RoomNumber>
+        <StartDate>2019-01-02</StartDate>
+        <EndDate>2019-01-09</EndDate>
+    </RoomDetails>
+</CustomerBooking>

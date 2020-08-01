@@ -1,0 +1,48 @@
+package com.acme.samples.mapping;
+
+import org.apache.camel.RoutesBuilder;
+import org.apache.camel.builder.AdviceWithRouteBuilder;
+import org.apache.camel.component.mock.MockEndpoint;
+import org.apache.camel.model.RouteDefinition;
+import org.apache.camel.test.junit4.CamelTestSupport;
+import org.junit.Test;
+
+import java.io.File;
+
+/**
+ * @author Will Barrett
+ */
+public class TestOneToOne extends CamelTestSupport {
+
+  @Override
+  public boolean isUseAdviceWith() {
+    return true;
+  }
+
+  //@Test
+  public void testOneToOne() throws Exception {
+    RouteDefinition route = context.getRouteDefinition(OneToOne.ROUTE_ID);
+    route.adviceWith(context, new AdviceWithRouteBuilder() {
+                       @Override
+                       public void configure() throws Exception {
+                         mockEndpointsAndSkip(OneToOne.DIRECT_OUT);
+                       }
+                     }
+    );
+    context.start();
+    
+    MockEndpoint output = getMockEndpoint("mock:" + OneToOne.DIRECT_OUT);
+    output.expectedMessageCount(1);
+    
+    template.sendBody(OneToOne.DIRECT_IN,
+                      new File("src/test/resources/customerBooking.valid.xml"));
+    
+    output.assertIsSatisfied();
+    
+  }
+
+  @Override
+  protected RoutesBuilder createRouteBuilder() {
+    return new OneToOne();
+  }
+}

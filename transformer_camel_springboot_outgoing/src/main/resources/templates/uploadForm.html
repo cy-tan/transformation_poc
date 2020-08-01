@@ -1,0 +1,30 @@
+<html xmlns:th="https://www.thymeleaf.org">
+<body>
+
+	<div th:if="${message}">
+		<h2 th:text="${message}"/>
+	</div>
+
+	<div>
+		<form method="POST" enctype="multipart/form-data" action="/">
+			<table>
+				<tr><td>File to upload:</td><td><input type="file" name="file" /></td></tr>
+				<tr><td></td><td><input type="submit" value="Upload" /></td></tr>
+				<tr><td></td><td><input type="radio" id="scenario_bds" name="scenario" value="bds" checked>
+					<label for="male">Outgoing-BDS-MTMX</label><br>
+					<input type="radio" id="scenario_murex" name="scenario" value="murex">
+					<label for="female">Outgoing-Murex-File-MTMX</label><br>
+			</table>
+		</form>
+	</div>
+
+	<div>
+		<ul>
+			<li th:each="file : ${files}">
+				<a th:href="${file}" th:text="${file}" />
+			</li>
+		</ul>
+	</div>
+
+</body>
+</html>
