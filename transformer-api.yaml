@@ -1,0 +1,488 @@
+apiVersion: v1
+items:
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      openshift.io/generated-by: OpenShiftNewApp
+    labels:
+      app: ibmmq
+      app.kubernetes.io/component: ibmmq
+      app.kubernetes.io/instance: ibmmq
+    name: ibmmq
+  spec:
+    ports:
+    - name: 1414-tcp
+      port: 1414
+      protocol: TCP
+      targetPort: 1414
+    - name: 9157-tcp
+      port: 9157
+      protocol: TCP
+      targetPort: 9157
+    - name: 9443-tcp
+      port: 9443
+      protocol: TCP
+      targetPort: 9443
+    selector:
+      deployment: ibmmq
+    sessionAffinity: None
+    type: ClusterIP
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      openshift.io/generated-by: OpenShiftNewApp
+    labels:
+      app: incoming-api
+      app.kubernetes.io/component: incoming-api
+      app.kubernetes.io/instance: incoming-api
+    name: incoming-api
+  spec:
+    ports:
+    - name: 8080-tcp
+      port: 8080
+      protocol: TCP
+      targetPort: 8080
+    selector:
+      deployment: incoming-api
+    sessionAffinity: None
+    type: ClusterIP
+- apiVersion: v1
+  kind: Service
+  metadata:
+    annotations:
+      openshift.io/generated-by: OpenShiftNewApp
+    labels:
+      app: outgoing-api
+      app.kubernetes.io/component: outgoing-api
+      app.kubernetes.io/instance: outgoing-api
+    name: outgoing-api
+  spec:
+    ports:
+    - name: 8080-tcp
+      port: 8080
+      protocol: TCP
+      targetPort: 8080
+    selector:
+      deployment: outgoing-api
+    sessionAffinity: None
+    type: ClusterIP
+- apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    annotations:
+      deployment.kubernetes.io/revision: "2"
+      image.openshift.io/triggers: '[{"from":{"kind":"ImageStreamTag","name":"ibmmq:latest"},"fieldPath":"spec.template.spec.containers[?(@.name==\"ibmmq\")].image"}]'
+      openshift.io/generated-by: OpenShiftNewApp
+    labels:
+      app: ibmmq
+      app.kubernetes.io/component: ibmmq
+      app.kubernetes.io/instance: ibmmq
+    name: ibmmq
+  spec:
+    progressDeadlineSeconds: 600
+    replicas: 1
+    revisionHistoryLimit: 10
+    selector:
+      matchLabels:
+        deployment: ibmmq
+    strategy:
+      rollingUpdate:
+        maxSurge: 25%
+        maxUnavailable: 25%
+      type: RollingUpdate
+    template:
+      metadata:
+        annotations:
+          openshift.io/generated-by: OpenShiftNewApp
+        creationTimestamp: null
+        labels:
+          deployment: ibmmq
+      spec:
+        containers:
+        - env:
+          - name: LICENSE
+            value: accept
+          - name: MQ_QMGR_NAME
+            value: QM1
+          image: quay.io/cytan/ibmmq@sha256:9bcee09b99b596610e7d660d597b76d9c395ed9bb6bdb970b8975ac6a3c0217e
+          imagePullPolicy: IfNotPresent
+          name: ibmmq
+          ports:
+          - containerPort: 1414
+            protocol: TCP
+          - containerPort: 9157
+            protocol: TCP
+          - containerPort: 9443
+            protocol: TCP
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext: {}
+        terminationGracePeriodSeconds: 30
+- apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    annotations:
+      deployment.kubernetes.io/revision: "3"
+      openshift.io/generated-by: OpenShiftNewApp
+    labels:
+      app: incoming-api
+      app.kubernetes.io/component: incoming-api
+      app.kubernetes.io/instance: incoming-api
+    name: incoming-api
+  spec:
+    progressDeadlineSeconds: 600
+    replicas: 1
+    revisionHistoryLimit: 10
+    selector:
+      matchLabels:
+        deployment: incoming-api
+    strategy:
+      rollingUpdate:
+        maxSurge: 25%
+        maxUnavailable: 25%
+      type: RollingUpdate
+    template:
+      metadata:
+        annotations:
+          openshift.io/generated-by: OpenShiftNewApp
+        creationTimestamp: null
+        labels:
+          deployment: incoming-api
+      spec:
+        containers:
+        - image: quay.io/cytan/transformer-camel-springboot-incoming:latest
+          imagePullPolicy: IfNotPresent
+          name: incoming-api
+          ports:
+          - containerPort: 8080
+            protocol: TCP
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          volumeMounts:
+          - mountPath: /deployments/config
+            name: volume-incoming
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext: {}
+        terminationGracePeriodSeconds: 30
+        volumes:
+        - configMap:
+            defaultMode: 420
+            name: spring-app-config-incoming
+          name: volume-incoming
+- apiVersion: apps/v1
+  kind: Deployment
+  metadata:
+    annotations:
+      deployment.kubernetes.io/revision: "4"
+      openshift.io/generated-by: OpenShiftNewApp
+    labels:
+      app: outgoing-api
+      app.kubernetes.io/component: outgoing-api
+      app.kubernetes.io/instance: outgoing-api
+    name: outgoing-api
+  spec:
+    progressDeadlineSeconds: 600
+    replicas: 1
+    revisionHistoryLimit: 10
+    selector:
+      matchLabels:
+        deployment: outgoing-api
+    strategy:
+      rollingUpdate:
+        maxSurge: 25%
+        maxUnavailable: 25%
+      type: RollingUpdate
+    template:
+      metadata:
+        annotations:
+          openshift.io/generated-by: OpenShiftNewApp
+        creationTimestamp: null
+        labels:
+          deployment: outgoing-api
+      spec:
+        containers:
+        - image: quay.io/cytan/transformer-camel-springboot-outgoing:latest
+          imagePullPolicy: IfNotPresent
+          name: outgoing-api
+          ports:
+          - containerPort: 8080
+            protocol: TCP
+          resources: {}
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          volumeMounts:
+          - mountPath: /deployments/config/
+            name: volume-outgoing
+        dnsPolicy: ClusterFirst
+        restartPolicy: Always
+        schedulerName: default-scheduler
+        securityContext: {}
+        terminationGracePeriodSeconds: 30
+        volumes:
+        - configMap:
+            defaultMode: 420
+            name: spring-app-config-outgoing
+          name: volume-outgoing
+- apiVersion: image.openshift.io/v1
+  kind: ImageStream
+  metadata:
+    annotations:
+      openshift.io/generated-by: OpenShiftNewApp
+      openshift.io/image.dockerRepositoryCheck: "2020-08-25T08:12:24Z"
+    generation: 2
+    labels:
+      app: ibmmq
+      app.kubernetes.io/component: ibmmq
+      app.kubernetes.io/instance: ibmmq
+    name: ibmmq
+  spec:
+    lookupPolicy:
+      local: false
+    tags:
+    - annotations:
+        openshift.io/imported-from: quay.io/cytan/ibmmq
+      from:
+        kind: DockerImage
+        name: quay.io/cytan/ibmmq
+      generation: 2
+      importPolicy: {}
+      name: latest
+      referencePolicy:
+        type: Source
+- apiVersion: route.openshift.io/v1
+  kind: Route
+  metadata:
+    annotations:
+      openshift.io/host.generated: "true"
+    labels:
+      app: ibmmq
+      app.kubernetes.io/component: ibmmq
+      app.kubernetes.io/instance: ibmmq
+    name: ibmmq
+  spec:
+    port:
+      targetPort: 9443
+    tls:
+      termination: passthrough
+    to:
+      kind: Service
+      name: ibmmq
+      weight: 100
+    wildcardPolicy: None
+- apiVersion: route.openshift.io/v1
+  kind: Route
+  metadata:
+    annotations:
+      openshift.io/host.generated: "true"
+    labels:
+      app: incoming-api
+      app.kubernetes.io/component: incoming-api
+      app.kubernetes.io/instance: incoming-api
+    name: incoming-api
+  spec:
+    port:
+      targetPort: 8080-tcp
+    to:
+      kind: Service
+      name: incoming-api
+      weight: 100
+    wildcardPolicy: None
+- apiVersion: route.openshift.io/v1
+  kind: Route
+  metadata:
+    annotations:
+      openshift.io/host.generated: "true"
+    labels:
+      app: outgoing-api
+      app.kubernetes.io/component: outgoing-api
+      app.kubernetes.io/instance: outgoing-api
+    name: outgoing-api
+  spec:
+    port:
+      targetPort: 8080-tcp
+    to:
+      kind: Service
+      name: outgoing-api
+      weight: 100
+    wildcardPolicy: None
+- apiVersion: v1
+  data:
+    application.properties: |-
+      camel.springboot.main-run-controller=true
+
+      # WMQ broker properties
+      #ibm.mq.queueManager=qm001
+      #ibm.mq.channel=CLOUD.APP.SVRCONN
+      #ibm.mq.connName=qm001-0077.qm.us-south.mq.appdomain.cloud(31179)
+      #ibm.mq.user=apachecamel
+      #ibm.mq.password=sH4S5IdZ2rzm1C5KPbjTiajtUnsSxF3Y5QyZHRvdmeoz
+
+      ibm.mq.queueManager=QM1
+      ibm.mq.channel=DEV.APP.SVRCONN
+      ibm.mq.connName=ibmmq.transformer-poc.svc(1414)
+      ibm.mq.user=app
+      ibm.mq.password=passw0rd
+
+      #out going flow scenarios : queue names
+      out.1.start.queue=DEV.QUEUE.1
+      out.1.end.queue=DEV.QUEUE.OUT
+      out.2.start.queue=DEV.QUEUE.2
+      out.2.end.queue=DEV.QUEUE.OUT
+      out.3.start.queue=DEV.QUEUE.3
+      out.3.end.queue=DEV.QUEUE.OUT
+      out.4.start.queue=DEV.QUEUE.4
+      out.4.end.queue=DEV.QUEUE.OUT
+      out.5.start.queue=DEV.QUEUE.5
+      out.5.end.queue=DEV.QUEUE.OUT
+      out.6.start.queue=DEV.QUEUE.6
+      out.6.end.queue=DEV.QUEUE.OUT
+
+      #in coming flow scenarios : queue names
+      in.7.start.queue=DEV.QUEUE.7
+      in.7.end.queue=DEV.QUEUE.OUT
+      in.8.start.queue=DEV.QUEUE.8
+      in.8.end.queue=DEV.QUEUE.OUT
+      in.9.start.queue=DEV.QUEUE.9
+      in.9.end.queue=DEV.QUEUE.OUT
+      in.10.start.queue=DEV.QUEUE.10
+      in.10.end.queue=DEV.QUEUE.OUT
+
+      #out going flow scenarios : file path
+      out.1.start.path=/tmp/input/1
+      out.1.end.path=/tmp/output/1
+      out.2.start.path=/tmp/input/2
+      out.2.end.path=/tmp/output/2
+      out.3.start.path=/tmp/input/3
+      out.3.end.path=/tmp/output/3
+      out.4.start.path=/tmp/input/4
+      out.4.end.path=/tmp/output/4
+      out.5.start.path=/tmp/input/5
+      out.5.end.path=/tmp/output/5
+      out.6.start.path=/tmp/input/6
+      out.6.end.path=/tmp/output/6
+
+      #in going flow scenarios : file path
+      in.7.start.path=/tmp/input/7
+      in.7.end.path=/tmp/output/7
+      in.8.start.path=/tmp/input/8
+      in.8.end.path=/tmp/output/8
+      in.9.start.path=/tmp/input/9
+      in.9.end.path=/tmp/output/9
+      in.10.start.path=/tmp/input/10
+      in.10.end.path=/tmp/output/10
+
+      web.input.filepath=/tmp/input
+      web.output.filepath=/tmp/output
+      web.mtprinted.upload.filepath=/tmp/input/mtprinted
+      web.mtrentas.upload.filepath=/tmp/input/mtrentas
+      web.mxprinted.upload.filepath=/tmp/input/mxprinted
+      web.mxrentas.upload.filepath=/tmp/input/mxrentas
+
+      in.mtprinted.start.queue=DEV.QUEUE.7
+      in.mtrentas.start.queue=DEV.QUEUE.8
+      in.mxprinted.start.queue=DEV.QUEUE.9
+      in.mxrentas.start.queue=DEV.QUEUE.10
+      in.end.queue=DEV.QUEUE.OUT
+
+      #home.redirect=https://secure-transformer-camel-springboot-incoming-fuse-poc.apps.cluster-klab-2542.klab-2542.example.opentlc.com
+      home.redirect=/
+      home.ssl=http
+      #home.ssl=https
+  kind: ConfigMap
+  metadata:
+    name: spring-app-config-incoming
+- apiVersion: v1
+  data:
+    application.properties: |-
+      camel.springboot.main-run-controller=true
+
+      # WMQ broker properties
+      #ibm.mq.queueManager=qm001
+      #ibm.mq.channel=CLOUD.APP.SVRCONN
+      #ibm.mq.connName=qm001-0077.qm.us-south.mq.appdomain.cloud(31179)
+      #ibm.mq.user=apachecamel
+      #ibm.mq.password=sH4S5IdZ2rzm1C5KPbjTiajtUnsSxF3Y5QyZHRvdmeoz
+
+      ibm.mq.queueManager=QM1
+      ibm.mq.channel=DEV.APP.SVRCONN
+      ibm.mq.connName=ibmmq.transformer-poc.svc(1414)
+      ibm.mq.user=app
+      ibm.mq.password=passw0rd
+
+      #out going flow scenarios : queue names
+      out.1.start.queue=DEV.QUEUE.1
+      out.1.end.queue=DEV.QUEUE.OUT
+      out.2.start.queue=DEV.QUEUE.2
+      out.2.end.queue=DEV.QUEUE.OUT
+      out.3.start.queue=DEV.QUEUE.3
+      out.3.end.queue=DEV.QUEUE.OUT
+      out.4.start.queue=DEV.QUEUE.4
+      out.4.end.queue=DEV.QUEUE.OUT
+      out.5.start.queue=DEV.QUEUE.5
+      out.5.end.queue=DEV.QUEUE.OUT
+      out.6.start.queue=DEV.QUEUE.6
+      out.6.end.queue=DEV.QUEUE.OUT
+
+      #in coming flow scenarios : queue names
+      in.7.start.queue=DEV.QUEUE.7
+      in.7.end.queue=DEV.QUEUE.OUT
+      in.8.start.queue=DEV.QUEUE.8
+      in.8.end.queue=DEV.QUEUE.OUT
+      in.9.start.queue=DEV.QUEUE.9
+      in.9.end.queue=DEV.QUEUE.OUT
+      in.10.start.queue=DEV.QUEUE.10
+      in.10.end.queue=DEV.QUEUE.OUT
+
+      #out going flow scenarios : file path
+      out.1.start.path=/tmp/input/1
+      out.1.end.path=/tmp/output/1
+      out.2.start.path=/tmp/input/2
+      out.2.end.path=/tmp/output/2
+      out.3.start.path=/tmp/input/3
+      out.3.end.path=/tmp/output/3
+      out.4.start.path=/tmp/input/4
+      out.4.end.path=/tmp/output/4
+      out.5.start.path=/tmp/input/5
+      out.5.end.path=/tmp/output/5
+      out.6.start.path=/tmp/input/6
+      out.6.end.path=/tmp/output/6
+
+      #in going flow scenarios : file path
+      in.7.start.path=/tmp/input/7
+      in.7.end.path=/tmp/output/7
+      in.8.start.path=/tmp/input/8
+      in.8.end.path=/tmp/output/8
+      in.9.start.path=/tmp/input/9
+      in.9.end.path=/tmp/output/9
+      in.10.start.path=/tmp/input/10
+      in.10.end.path=/tmp/output/10
+
+      web.input.filepath=/tmp/input
+      web.output.filepath=/tmp/output
+      web.bds.upload.filepath=/tmp/input/bds
+      web.murex.upload.filepath=/tmp/input/murex
+
+      out.bds.start.queue=DEV.QUEUE.1
+      out.murex.start.queue=DEV.QUEUE.2
+      out.end.queue=DEV.QUEUE.OUT
+
+      #home.redirect=https://secure-transformer-camel-springboot-outgoing-fuse-poc.apps.cluster-klab-2542.klab-2542.example.opentlc.com
+      home.redirect=/
+      home.ssl=http
+      #home.ssl=https
+  kind: ConfigMap
+  metadata:
+    name: spring-app-config-outgoing
+kind: List
+metadata:
+  resourceVersion: ""
+  selfLink: ""
