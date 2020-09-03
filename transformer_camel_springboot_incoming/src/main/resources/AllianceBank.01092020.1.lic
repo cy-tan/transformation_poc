@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!DOCTYPE properties SYSTEM "http://java.sun.com/dtd/properties.dtd">
 <properties>
-<comment>Transformer Licence. Created Tue Jul 21 11:57:08 BST 2020</comment>
+<comment>Transformer Licence. Created Tue Sep 01 10:08:54 BST 2020</comment>
 <entry key="REQUIRES_ACTIVATION">false</entry>
 <entry key="USER_LIMIT">UNLIMITED</entry>
 <entry key="LICENSEE">AllianceBank</entry>
 <entry key="TRANSFORMER_GUI">FULL</entry>
 <entry key="REQUIRES_CONNECTIVITY">false</entry>
-<entry key="COMMENCEMENT">21/07/2020</entry>
+<entry key="COMMENCEMENT">01/09/2020</entry>
 <entry key="LICENCE_TYPE">UNLIMITED</entry>
-<entry key="SIGNATURE">MC0CFQCBBOLq+uDyTfrsNd95sU9/zlWI8AIUMcn5DDLgW4pLdUd1Tf2WHgbJE7E=</entry>
-<entry key="LICENCE_ID">2f0a1e09-6c15-4c25-a5d8-76e3faa62a4d</entry>
+<entry key="SIGNATURE">MC0CFEx7z1xUbpKgTurRdPimmoquw3UzAhUAjYqg7q8F03y2nxXnc/wh+EOqPjc=</entry>
+<entry key="LICENCE_ID">889c80e3-2ec0-4cd4-8a59-63683ec87e37</entry>
 <entry key="AUTHORING_ID"/>
 <entry key="SCOPE">Evaluation Only</entry>
 <entry key="TRANSFORMER_RUNTIME">NONE</entry>
@@ -18,5 +18,5 @@
 <entry key="ALLOWED_LIBRARIES"/>
 <entry key="SERVER_URL">https://www.trace-transformer.co.uk/trace-licence-server/licence/</entry>
 <entry key="HANDSHAKE_KEY"/>
-<entry key="EXPIRY">09/09/2020</entry>
+<entry key="EXPIRY">01/10/2020</entry>
 </properties>
